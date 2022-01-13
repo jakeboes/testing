@@ -1,0 +1,197 @@
+<div data-element-type="html" class="u_1576731715 dmCustomHtml" id="1576731715"> <div style="text-align: center"></div>
+</div>
+<div data-element-type="html" class="u_1430015048 dmCustomHtml" id="1430015048">
+  <div id="hteamContainer"> <span id="hteamContainerHeader">This offer expires on February 3rd, 2022 11:59 PM EST.</span>
+    <form accept-charset="UTF-8" action="https://vg165.infusionsoft.com/app/form/process/4ebca0a4c75e6222e9c3cded9eca4e7a" class="infusion-form" method="POST" onsubmit="return checkNow();"><input name="inf_form_xid" type="hidden" value="4ebca0a4c75e6222e9c3cded9eca4e7a"><input name="infusionsoft_version" type="hidden" value="1.70.0.389880"> <div class="infusion-field"><input style="background-color:white" id="hteam_name" name="inf_field_FirstName" placeholder="First Name *" type="text"> <span id="requireName"></span>
+    </div>
+    <div class="infusion-field"><input style="background-color:white" id="hteam_email" name="inf_field_Email" placeholder="Email *" type="text"> <span id="requireEmail"></span>
+    </div>
+    <div class="infusion-field"> <div class="infusion-field-input-container infusion-date-input"> <select style="background-color:white" id="hteam_date" onchange="updateHours(this)" name="inf_custom_DiviningYourDestinyWatchLaterSelection">
+      <option disabled="" hidden="">Select Date</option><option value="01-12-2022">Today</option><option value="01-13-2022">Tomorrow</option><option value="01-14-2022">Fri, Jan 14th</option><option value="01-15-2022">Sat, Jan 15th</option><option value="02-01-2022">Tue, Feb 1st, Live Viewing and Q&amp;A with Neale!</option></select>
+      <span id="requireDate"></span>
+    </div>
+    <div class="infusion-field-input-container infusion-time-select"> <select style="background-color:white" id="hteam_time" onchange="updateButton(this)" name="inf_custom_DiviningYourDestinyWatchLaterSelection"> <option disabled="" selected="" hidden="">Select Time</option>
+      <option disabled="" hidden="">Select Time</option></select>
+      <span id="requireTime"></span>
+    </div>
+    </div>
+    <input id="hteam_checkbox" style="display:none" type="checkbox" value="3787" name="inf_option_HideThisField"><input id="hteam_checkbox_2" style="display:none" type="checkbox" value="3837" name="inf_option_LiveSignup">&nbsp; <div class="infusion-submit"> <button style="font-size:28px" id="submitButton" type="submit">Submit</button>
+    </div>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data-10-year-range.js"></script>
+<script type="text/javascript" src="https://vg165.infusionsoft.app/app/webTracking/getTrackingCode"></script>
+<script type="text/javascript" src="https://vg165.infusionsoft.com/app/timezone/timezoneInputJs?xid=4ebca0a4c75e6222e9c3cded9eca4e7a"></script>
+<script type="text/javascript" src="https://vg165.infusionsoft.app/app/webform/overwriteRefererJs"></script>
+<script>
+ const params = new URLSearchParams(window.location.search);
+ const infEmail = params.get("inf_field_Email");
+ const timezone = moment.tz.guess();
+ const now = moment.tz(timezone);
+ const redirect = "https://www.humanitysteam.org/video-view-divining-your-destiny";
+ const startDate = moment.tz("2021-09-07 00:00:00", timezone);
+ const endDate = moment.tz("2022-02-03 23:59:00", timezone);
+ const specialDate = moment.tz("2022-02-01 17:00:00", "America/Los_Angeles");
+ const specialLabel = "Live Viewing and Q&A with Neale!";
+ const maxDisplayDates = 4;
+ function emailValid(email) {
+   return email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+ }
+ const selectDate = document.getElementById("hteam_date")
+ const selectTime = document.getElementById("hteam_time")
+ const nowButton = document.getElementById("hteam_checkbox")
+ const dateButton = document.getElementById("hteam_checkbox_2")
+ const selectSubmit = document.getElementById("submitButton")
+ const selectFirstName = document.getElementById("hteam_name")
+ const selectEmail = document.getElementById("hteam_email")
+ function initialize() {
+   if (endDate < now) {
+     document.getElementById("hteamContainer").innerHTML = "This offering is currently unavailable.";
+     return;
+   } else {
+     setInterval(updateDateRange, updateDateRange());
+     const fmtEndDate = endDate.format("MMMM Do, YYYY h:mm A z");
+     document.getElementById("hteamContainerHeader").innerHTML = `This offer expires on ${fmtEndDate}.`;
+     if (infEmail) {
+       hteam_email.value = infEmail;
+     }
+   }
+ }
+ initialize()
+ function updateDateRange() {
+   let date = moment.max([now, startDate]).clone()
+   selectDate.options.length = 0
+   resetHours()
+   let opt = document.createElement("option");
+   opt.hidden = "True"
+   opt.disabled = "True"
+   opt.selected = "selected"
+   opt.innerHTML = "Select Date";
+   selectDate.appendChild(opt);
+   const cutoffDate = moment.min([endDate, date.clone().add(maxDisplayDates - 1, "d")])
+   while (date <= cutoffDate) {
+     const opt = document.createElement("option");
+     opt.value = date.format("MM-DD-YYYY");
+     let label;
+     if (now.isSame(date, "date")) {
+       label = "Today (Now/Later)";
+       if (now < specialDate) {
+	 label = "Today";
+       }
+     } else if (now.clone().add(1, "days").isSame(date, "date")) {
+       label = "Tomorrow";
+     } else {
+       label = date.format("ddd, MMM Do");
+     }
+     if (date.isSame(specialDate, "date") & (now < specialDate)) {
+       label += `, ${specialLabel}`
+     }
+     opt.innerHTML = label;
+     selectDate.appendChild(opt);
+     date.add(1, "d")
+   }
+   if (specialDate > cutoffDate) {
+     const opt = document.createElement("option");
+     opt.value = specialDate.format("MM-DD-YYYY");
+     opt.innerHTML = specialDate.format("ddd, MMM Do") + `, ${specialLabel}`;
+     selectDate.appendChild(opt);
+   }
+   const nextHour = now.clone().minute(0).second(0).add(1, "h");
+   return nextHour - now
+ }
+ function resetHours(obj) {
+   let opt = document.createElement("option");
+   opt.hidden = "True"
+   opt.disabled = "True"
+   opt.selected = "selected"
+   opt.innerHTML = "Select Time";
+   selectTime.appendChild(opt);
+   updateButton(this);
+ }
+ function updateHours(obj) {
+   const date = moment.tz(obj.value, "MM-DD-YYYY", timezone)
+   selectTime.options.length = 0
+   resetHours()
+   if (date.isSame(specialDate, "date") & (now < specialDate)) {
+     let opt = document.createElement("option");
+     opt.value = specialDate.format("H:mm");
+     opt.innerHTML = specialDate.format("h:mm A z");
+     selectTime.appendChild(opt);
+     dateButton.checked = true
+     return;
+   } else {
+     dateButton.checked = false
+   }
+   let min = 10;
+   if (now.isSame(date, "date")) {
+     let opt = document.createElement("option");
+     opt.value = "Now";
+     opt.innerHTML = "Watch Now";
+     selectTime.appendChild(opt);
+     min = Math.max(now.hour() + 1, min);
+   }
+   for (let i = min; i <= 15; i++){
+     date.hour(i);
+     let opt = document.createElement("option");
+     opt.value = date.format("H:mm");
+     opt.innerHTML = date.format("h:mm A z");
+     selectTime.appendChild(opt);
+   }
+ }
+ function updateButton(obj) {
+   if (obj.value == "Now") {
+     selectSubmit.innerHTML = "Start Watching!";
+     nowButton.checked = true
+   } else {
+     selectSubmit.innerHTML = "Submit";
+     nowButton.checked = false
+   }
+ }
+ function checkNow() {
+   document.getElementById("requireName").innerHTML = "";
+   document.getElementById("requireEmail").innerHTML = "";
+   document.getElementById("requireDate").innerHTML = "";
+   document.getElementById("requireTime").innerHTML = "";
+   const warn = "* Required Feild".fontcolor("red");
+   const warnEmail = "* Invalid Email".fontcolor("red");
+   let valid = true;
+   if (!selectFirstName.value) {
+     document.getElementById("requireName").innerHTML = warn;
+     valid = false;
+   }
+   if (!emailValid(selectEmail.value)) {
+     document.getElementById("requireEmail").innerHTML = warnEmail;
+     valid = false;
+   }
+   if (selectDate.value == "Select Date") {
+     document.getElementById("requireDate").innerHTML = warn;
+     valid = false;
+   }
+   if (selectTime.value == "Select Time") {
+     document.getElementById("requireTime").innerHTML = warn;
+     valid = false;
+   }
+   if (!valid) {
+     return false;
+   }
+   if (selectTime.value == "Now") {
+     window.open(redirect + "?inf_field_Email=" + hteam_email.value);
+   } else if (!dateButton.checked) {
+     let convertedTime = moment.tz(
+       selectDate.value + selectTime.value, "MM-DD-YYYY h:mm", timezone);
+     convertedTime = convertedTime.tz("America/Los_Angeles");
+     // Convert to PST for submission to server
+     let opt = document.createElement("option");
+     opt.value = convertedTime.format("MM-DD-YYYY");
+     selectDate.appendChild(opt);
+     selectDate.value = convertedTime.format("MM-DD-YYYY");
+     opt.value = convertedTime.format("H:mm");
+     selectTime.appendChild(opt);
+     selectTime.value = convertedTime.format("H:mm");
+   }
+   return true;
+ }
+</script>
